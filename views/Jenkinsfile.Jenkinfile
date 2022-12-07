@@ -1,0 +1,39 @@
+pipeline {
+    
+    agent any
+    
+    stages{
+        stage('Cloning') {
+            steps {
+                git 'https://github.com/jonnygovish/gallery.git'
+                echo 'Just Cloned'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building application.'
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing the application.'
+                sh 'npm test'
+            }
+        }
+        stage ('Deploy to Vercel') {
+            steps {
+                sh 'node server'
+                echo 'Server deploying on Vercel'
+            }
+        }
+    }
+    post {
+        success {
+            slackSend channel: '#general', message: 'Successful Pipeline. Link to Versel website where deployed is: https://vercel.com/mugoalvin/gallery-1/51VsbXRgAps3mUjavygDdUHsbvEP'
+        }
+        failure {
+            slackSend channel: '#general', message: 'Pipeline was not successful. Though the link to Vercel is: https://vercel.com/mugoalvin/gallery-1/51VsbXRgAps3mUjavygDdUHsbvEP'
+        }
+    }
+}
